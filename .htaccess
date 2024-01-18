@@ -1,3 +1,5 @@
 RewriteEngine On
-RewriteRule ^archive/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)$ proxy.php?action=archive&repo=$1/$2&branch=$3 [L]
-RewriteRule ^archive/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)$ proxy.php?action=archive&repo=$1/$2 [L]
+RewriteRule ^archive/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ proxy.php?action=archive&repo=$1/$2&branch=$3 [QSA,L]
+RewriteRule ^archive/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ proxy.php?action=archive&repo=$1/$2 [QSA,L]
+
+RewriteRule ^partial/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/(.+?)/?$ proxy.php?action=partial&repo=$1/$2&directory=$3 [QSA,L]
