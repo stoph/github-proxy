@@ -134,8 +134,3 @@ function getDefaultBranch($repo) {
     return false;
   }
 }
-
-/*
-https://github-proxy.com/archive/stoph/vip-commerce/main
-http://github-proxy.com/partial/WordPress/WordPress/wp-content/themes/twentyten
-*/
