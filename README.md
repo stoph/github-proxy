@@ -3,4 +3,4 @@ This is a simple proxy for the Github's archive files. It's intended to be used 
 
 *Sample URL Format*
 `https://github-proxy.com/archive/{repo}[/{branch}]
-`
+`https://github-proxy.com/partial/{repo}/{directory}
