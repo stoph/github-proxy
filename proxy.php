@@ -36,8 +36,12 @@ if ($debug) { $debug_log .= "Repo name: $repo_name\n";}
 if ($debug) { $debug_log .= "Repo filename: $repo_filename\n";}
 
 
-$unique_id = uniqid($action . '_' . str_replace('/', '-', $repo) . '_' . str_replace('/', '-', $branch) . '_' . str_replace('/', '-', $directory) . '_');
-if ($debug) { $debug_log .= "Unique id: $unique_id\n";}
+$concatenated = $repo . '_' . $branch . '_' . $directory;
+$normalized = str_replace('/', '-', $concatenated);
+
+$unique_id = uniqid($action . '_' . $normalized . '_');
+
+if ($debug) { $debug_log .= "Unique id: $unique_id\n"; }
 
 switch ($action) {
   case 'archive':
