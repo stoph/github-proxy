@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Super simple proxy service I built for a very specific need that no one else besides me will probably ever use">
-  <title>Github Proxy</title>
+  <title>GitHub Proxy</title>
   <script src="https://cdn.tailwindcss.com/"></script>
 </head>
 <body class="flex flex-col justify-center min-h-screen bg-gray-50">
   <div class="text-center px-4">
-    <h1 class="text-5xl font-bold mb-4">Github Proxy</h1>
-    <p class="text-xl text-gray-600 mb-8">This is a simple proxy for the Github's archive files. It's intended to be used as a demo for an experiment with <a href="https://wordpress.org/playground/">WordPress Playground</a>.</p>
+    <h1 class="text-5xl font-bold mb-4">GitHub Proxy</h1>
+    <p class="text-xl text-gray-600 mb-8">This is a proxy for the GitHub's archive files.<br>It is intended to be used as resource urls for <a href="https://wordpress.org/playground/">WordPress Playground</a>.</p>
     <div class="max-w-md mx-auto">
       <label class="block text-gray-700 text-lg font-bold mb-2" for="url">
         Sample URL Format
