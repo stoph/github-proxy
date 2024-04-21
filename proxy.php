@@ -68,23 +68,25 @@ switch ($action) {
     $github_repo_url = "https://github.com/$repo.git";
     if ($debug) { $debug_log .= "Github repo url: $github_repo_url\n";}
 
-    exec("git clone --depth 1 --filter=blob:none --sparse --no-checkout --branch $branch $github_repo_url");
-    if ($debug) { 
-      $debug_log .= "git clone --depth 1 --filter=blob:none --sparse --no-checkout --branch $branch $github_repo_url\n";
-    }
+    $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout --branch $branch $github_repo_url";
+    exec($command);
+    if ($debug) { $debug_log .= "$command\n"; }
 
     chdir($repo_name);
-    if ($debug) { $debug_log .= "cd $repo_name\n";}
+    if ($debug) { $debug_log .= "cd $repo_name\n"; }
 
-    exec("git config core.sparseCheckout true");
-    if ($debug) { $debug_log .= "git config core.sparseCheckout true\n";}
+    $command = "git config core.sparseCheckout true";
+    exec($command);
+    if ($debug) { $debug_log .= "$command\n"; }
 
     // Set only the directory we need
-    exec("git sparse-checkout set $directory --no-cone");
-    if ($debug) { $debug_log .= "git sparse-checkout set $directory --no-cone\n";}
+    $command = "git sparse-checkout set $directory --no-cone";
+    exec($command);
+    if ($debug) { $debug_log .= "$command\n"; }
     
-    exec("git read-tree -mu HEAD");
-    if ($debug) { $debug_log .= "git read-tree -mu HEAD\n";}
+    $command = "git read-tree -mu HEAD";
+    exec($command);
+    if ($debug) { $debug_log .= "$command\n"; }
 
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET');
