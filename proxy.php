@@ -4,6 +4,8 @@ $start_time = microtime(true);
 $action     = $_GET['action'] ?? null;
 $repo       = $_GET['repo'] ?? null;
 $branch     = $_GET['branch'] ?? null;
+$pr         = $_GET['pr'] ?? null; // numeric
+$commit     = $_GET['commit'] ?? null; // alphanumeric
 $directory  = $_GET['directory'] ?? null;
 $debug      = $_GET['debug'] ?? false;
 
@@ -19,89 +21,160 @@ if (!$repo) {
   die('Repo required');
 }
 
-$repo_name = end(explode('/', $repo));
+// Hide output from exec calls in logs when not in debug mode
+$exec_redirection = $debug ? '' : ' > /dev/null 2>&1';
 
-if (!$branch) {
-  $branch = getDefaultBranch($repo);
-  if (!$branch) {
-    http_response_code(400);
-    die('Invalid default branch');
-  }
+if ($debug) { $debug_log .= "Repo: $repo\n";}
+$repo_name = explode('/', $repo);
+$repo_name = end($repo_name);
+
+if ($directory) {
+  $action = 'partial';
+  $path   = "$repo/$directory";
+  if ($debug) { $debug_log .= "Directory: $directory\n";}
+} else {
+  $action = 'archive';
+  $path   = $repo;
 }
-if ($debug) { $debug_log .= "Branch: $branch\n";}
+if ($debug) { $debug_log .= "Action: $action\n";}
+$path = str_replace('/', '-', $path);
 
-$repo_filename = "$repo_name-$branch";
-if ($debug) { $debug_log .= "Repo name: $repo_name\n";}
+// Determine reference type for the checkout PR, Commit, or Branch based
+if ($pr) {
+  $reference = 'pr';
+  $repo_filename = "$repo_name-pr_$pr.zip";
+  if ($debug) { $debug_log .= "Reference > PR: $pr\n";}
+} elseif ($commit) {
+  $reference = 'commit';
+  $repo_filename = "$repo_name-commit_$commit.zip";
+  if ($debug) { $debug_log .= "Reference > Commit: $commit\n";}
+} else {
+  $reference = 'branch';
+  if (!$branch) {
+    $branch = getDefaultBranch($repo);
+    if (!$branch) {
+      http_response_code(400);
+      die('Invalid default branch');
+    }
+  }
+  $repo_filename = $repo_name . '-branch_' . str_replace('/', '-', $branch) . '.zip';
+  if ($debug) { $debug_log .= "Reference > Branch: $branch\n";}
+}
+
 if ($debug) { $debug_log .= "Repo filename: $repo_filename\n";}
 
+$unique_id = uniqid( str_replace('/', '-', $repo). '_');
 
-$unique_id = uniqid($action . '_' . str_replace('/', '-', $repo) . '_' . $branch . '_' . str_replace('/', '-', $directory) . '_');
-if ($debug) { $debug_log .= "Unique id: $unique_id\n";}
+// echo "<xmp>$debug_log</xmp>";
+// die();
+
+$github_repo_url = "https://github.com/$repo.git";
+if ($debug) { $debug_log .= "Github repo url: $github_repo_url\n";}
+
+$temp_checkout_dir = $checkouts_dir . '/' . $unique_id;
+if ($debug) { $debug_log .= "Temp checkout directory: $temp_checkout_dir\n";}
+
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
+header('Content-Type: application/zip');
+header('Content-Disposition: attachment; filename="' . $repo_filename . '"');
+header('Pragma: no-cache');
 
 switch ($action) {
   case 'archive':
-    $url = "https://github.com/$repo/archive/$branch.zip";
-    header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET');
-    header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename="' . $repo_filename . '.zip"');
-    header('Pragma: no-cache');
-    readfile($url);
+    // What type of reference are we using to get the full archive
+    switch ($reference) {
+      case 'pr':
+        // Create and change to a temp directory for checkouts
+        mkdir($temp_checkout_dir, 0755, true);
+        chdir($temp_checkout_dir);
+
+        $command = "git clone --depth 1 --filter=blob:none --no-checkout $github_repo_url";
+        exec($command . $exec_redirection);
+        if ($debug) { $debug_log .= "[Clone] $command\n"; }
+
+        chdir($repo_name);
+        if ($debug) { $debug_log .= "[Change directory] cd $repo_name\n"; }
+
+        $command = "git fetch origin pull/$pr/head";
+        exec($command . $exec_redirection);
+        if ($debug) { $debug_log .= "[Fetch] $command\n"; }
+
+        $command = "git checkout FETCH_HEAD";
+        exec($command . $exec_redirection);
+        if ($debug) { $debug_log .= "[Checkout] $command\n"; }
+        
+        zipAndServe(".", $checkouts_dir, $temp_checkout_dir);
+        break;
+      case 'commit':
+        $url = "https://github.com/$repo/archive/$commit.zip";
+        readfile($url);
+        break;
+      case 'branch':
+        $url = "https://github.com/$repo/archive/$branch.zip";
+        readfile($url);
+        break;
+    }
     break;
 
   case 'partial':
-    if (!$directory) {
-      http_response_code(400);
-      die('Directory required for partial action');
-    }
-
-    if (!file_exists($checkouts_dir)) {
-      mkdir($checkouts_dir, 0755, true);
-    }
-    
-    $temp_checkout_dir = $checkouts_dir . '/' . $unique_id;
-    if ($debug) { $debug_log .= "Temp dir: $temp_checkout_dir\n";}
-
-    mkdir($temp_checkout_dir);
+    // Create and change to a temp directory for checkouts
+    mkdir($temp_checkout_dir, 0755, true);
     chdir($temp_checkout_dir);
 
-    $github_repo_url = "https://github.com/$repo.git";
-    if ($debug) { $debug_log .= "Github repo url: $github_repo_url\n";}
-
-    $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout --branch $branch $github_repo_url";
-    exec($command);
-    if ($debug) { $debug_log .= "$command\n"; }
+    switch ($reference) {
+      case 'pr':
+        $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout $github_repo_url";
+        break;
+      case 'commit':
+        // We have to get the full history to have access to all commits (this is slow)
+        $command = "git clone --filter=blob:none --sparse --no-checkout $github_repo_url";
+        break;
+      case 'branch':
+        // Only get the specific branch with a depth of 1
+        $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout --branch $branch $github_repo_url";
+        break;
+    }
+    
+    exec($command . $exec_redirection);
+    if ($debug) { $debug_log .= "[Clone] $command\n"; }
 
     chdir($repo_name);
     if ($debug) { $debug_log .= "cd $repo_name\n"; }
 
     $command = "git config core.sparseCheckout true";
-    exec($command);
-    if ($debug) { $debug_log .= "$command\n"; }
+    exec($command . $exec_redirection);
+    if ($debug) { $debug_log .= "[Setting sparseCheckout] $command\n"; }
 
     // Set only the directory we need
     $command = "git sparse-checkout set $directory --no-cone";
-    exec($command);
-    if ($debug) { $debug_log .= "$command\n"; }
+    exec($command . $exec_redirection);
+    if ($debug) { $debug_log .= "[Setting sparse directories] $command\n"; }
     
-    $command = "git read-tree -mu HEAD";
-    exec($command);
-    if ($debug) { $debug_log .= "$command\n"; }
-
-    header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET');
-    header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename="' . $repo_filename . '.zip"');
-    header('Pragma: no-cache');
-
-    $command = "zip -r - $directory";
-    if ($debug) { $debug_log .= "Zipping file: $command\n";}
-    passthru($command);
-
-    chdir($checkouts_dir);
-    if (!$debug) {
-      exec("rm -rf $temp_checkout_dir");
+    // Get specific PR or commit
+    switch ($reference) {
+      case 'pr':
+        // Fetch specific PR (in a detached HEAD state)
+        $command = "git fetch origin pull/$pr/head";
+        exec($command . $exec_redirection);
+        if ($debug) { $debug_log .= "[Fetch PR] $command\n"; }
+        // Checkout from temp reference (FETCH_HEAD) for last fetched commit
+        $command = "git checkout FETCH_HEAD";
+        break;
+      case 'commit':
+        // Checkout specific commit
+        $command = "git checkout $commit";
+        break;
+      case 'branch':
+        // Checkout specific branch (defined in clone above) at HEAD
+        $command = "git read-tree -mu HEAD";
+        break;
     }
+
+    exec($command . $exec_redirection);
+    if ($debug) { $debug_log .= "[Checkout] $command\n"; }
+
+    zipAndServe($directory, $checkouts_dir, $temp_checkout_dir);
     break;
 
   default:
@@ -117,6 +190,20 @@ if ($debug) {
 
 $usage = date('Y/m/d g:i:s a') . " [$elapsed_time ms] " . print_r($_GET, true) . "\n";
 file_put_contents("$logs_dir/usage.log", $usage, FILE_APPEND);
+
+function zipAndServe($directory, $checkouts_dir, $temp_checkout_dir) {
+  global $debug, $debug_log;
+  
+  $command = "zip -rq - $directory";
+  if ($debug) { $debug_log .= "[Zipping files] $command\n";}
+  passthru($command);
+
+  // Remove this temporary checkout directory
+  chdir($checkouts_dir);
+  if (!$debug) {
+    exec("rm -rf $temp_checkout_dir");
+  }
+}
 
 function getDefaultBranch($repo) {
   $ch = curl_init();
