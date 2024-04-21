@@ -89,14 +89,14 @@ switch ($action) {
         mkdir($temp_checkout_dir, 0755, true);
         chdir($temp_checkout_dir);
 
-        $command = "git clone --depth 1 --filter=blob:none --no-checkout $github_repo_url";
+        $command = "git clone --depth 1 --filter=blob:none --no-checkout " . escapeshellarg($github_repo_url);
         exec($command . $exec_redirection);
         if ($debug) { $debug_log .= "[Clone] $command\n"; }
 
         chdir($repo_name);
         if ($debug) { $debug_log .= "[Change directory] cd $repo_name\n"; }
 
-        $command = "git fetch origin pull/$pr/head";
+        $command = "git fetch origin " . escapeshellarg("pull/$pr/head");
         exec($command . $exec_redirection);
         if ($debug) { $debug_log .= "[Fetch] $command\n"; }
 
@@ -124,15 +124,15 @@ switch ($action) {
 
     switch ($reference) {
       case 'pr':
-        $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout $github_repo_url";
+        $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout " . escapeshellarg($github_repo_url);
         break;
       case 'commit':
         // We have to get the full history to have access to all commits (this is slow)
-        $command = "git clone --filter=blob:none --sparse --no-checkout $github_repo_url";
+        $command = "git clone --filter=blob:none --sparse --no-checkout " . escapeshellarg($github_repo_url);
         break;
       case 'branch':
         // Only get the specific branch with a depth of 1
-        $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout --branch $branch $github_repo_url";
+        $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout --branch " . escapeshellarg($branch) . " " . escapeshellarg ($github_repo_url);
         break;
     }
     
@@ -147,7 +147,7 @@ switch ($action) {
     if ($debug) { $debug_log .= "[Setting sparseCheckout] $command\n"; }
 
     // Set only the directory we need
-    $command = "git sparse-checkout set $directory --no-cone";
+    $command = "git sparse-checkout set " . escapeshellarg($directory) . " --no-cone";
     exec($command . $exec_redirection);
     if ($debug) { $debug_log .= "[Setting sparse directories] $command\n"; }
     
@@ -155,7 +155,7 @@ switch ($action) {
     switch ($reference) {
       case 'pr':
         // Fetch specific PR (in a detached HEAD state)
-        $command = "git fetch origin pull/$pr/head";
+        $command = "git fetch origin " . escapeshellarg("pull/$pr/head");
         exec($command . $exec_redirection);
         if ($debug) { $debug_log .= "[Fetch PR] $command\n"; }
         // Checkout from temp reference (FETCH_HEAD) for last fetched commit
@@ -163,7 +163,7 @@ switch ($action) {
         break;
       case 'commit':
         // Checkout specific commit
-        $command = "git checkout $commit";
+        $command = "git checkout " . escapeshellarg($commit);
         break;
       case 'branch':
         // Checkout specific branch (defined in clone above) at HEAD
@@ -194,7 +194,7 @@ file_put_contents("$logs_dir/usage.log", $usage, FILE_APPEND);
 function zipAndServe($directory, $checkouts_dir, $temp_checkout_dir) {
   global $debug, $debug_log;
   
-  $command = "zip -rq - $directory";
+  $command = "zip -rq - " . escapeshellarg($directory);
   if ($debug) { $debug_log .= "[Zipping files] $command\n";}
   passthru($command);
 
