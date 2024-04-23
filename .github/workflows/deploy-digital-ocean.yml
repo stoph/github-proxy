@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@latest
 
     - name: Deploy to SFTP
       uses: appleboy/scp-action@master
