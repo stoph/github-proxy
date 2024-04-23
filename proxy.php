@@ -19,7 +19,8 @@ if (!$repo) {
   die('Repo required');
 }
 
-$repo_name = end(explode('/', $repo));
+$repo_name = explode('/', $repo);
+$repo_name = end($repo_name);
 
 if (!$branch) {
   $branch = getDefaultBranch($repo);
@@ -35,7 +36,7 @@ if ($debug) { $debug_log .= "Repo name: $repo_name\n";}
 if ($debug) { $debug_log .= "Repo filename: $repo_filename\n";}
 
 
-$unique_id = uniqid($action . '_' . str_replace('/', '-', $repo) . '_' . $branch . '_' . str_replace('/', '-', $directory) . '_');
+$unique_id = uniqid($action . '_' . str_replace('/', '-', $repo) . '_' . str_replace('/', '-', $branch) . '_' . str_replace('/', '-', $directory) . '_');
 if ($debug) { $debug_log .= "Unique id: $unique_id\n";}
 
 switch ($action) {
