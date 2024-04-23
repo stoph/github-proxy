@@ -19,4 +19,4 @@ jobs:
         password: ${{ secrets.SFTP_PASSWORD }}
         port: 22
         source: "."  # Deploy all files and directories in the repo
-        target: "/var/www/github-proxy.com/tmp"  # Remote directory
+        target: "/var/www/github-proxy.com"  # Remote directory
