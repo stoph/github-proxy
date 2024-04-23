@@ -1,0 +1,22 @@
+name: Deploy to Digital Ocean
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to SFTP
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SFTP_SERVER }}
+        username: ${{ secrets.SFTP_USERNAME }}
+        password: ${{ secrets.SFTP_PASSWORD }}
+        port: 22
+        source: "."  # Deploy all files and directories in the repo
+        target: "/var/www/github-proxy.com/tmp"  # Remote directory
