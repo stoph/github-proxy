@@ -6,6 +6,7 @@ $repo       = $_GET['repo'] ?? null;
 $branch     = $_GET['branch'] ?? null;
 $pr         = $_GET['pr'] ?? null; // numeric
 $commit     = $_GET['commit'] ?? null; // alphanumeric
+$release    = $_GET['release'] ?? null; // alphanumeric
 $directory  = $_GET['directory'] ?? null;
 $debug      = $_GET['debug'] ?? false;
 
@@ -60,6 +61,16 @@ if ($pr) {
   
   $repo_filename = "$repo_name-commit_$commit.zip";
   if ($debug) { $debug_log .= "Reference > Commit: $commit\n";}
+} elseif ($release) {
+  $reference = 'release';
+  // Validate release tag syntax
+  if (!preg_match('/^[a-zA-Z0-9._-]+$/', $release)) {
+    http_response_code(400);
+    die('Invalid release tag.');
+  }
+  
+  $repo_filename = "$repo_name-release_$release.zip";
+  if ($debug) { $debug_log .= "Reference > Release: $release\n";}
 } else {
   $reference = 'branch';
   // Validate branch name syntax
@@ -137,6 +148,11 @@ switch ($action) {
         break;
       case 'branch':
         $url = "https://github.com/$repo/archive/$branch.zip";
+        if ($debug) { $debug_log .= "GitHub direct URL: $url\n";}
+        readfile($url);
+        break;
+      case 'release':
+        $url = "https://github.com/$repo/archive/refs/tags/$release.zip";
         if ($debug) { $debug_log .= "GitHub direct URL: $url\n";}
         readfile($url);
         break;
