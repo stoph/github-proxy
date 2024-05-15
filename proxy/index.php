@@ -8,6 +8,7 @@ $pr         = $_GET['pr'] ?? null; // numeric
 $commit     = $_GET['commit'] ?? null; // alphanumeric
 $release    = $_GET['release'] ?? null; // alphanumeric
 $directory  = $_GET['directory'] ?? null;
+$asset       = $_GET['asset'] ?? null;
 $debug      = $_GET['debug'] ?? false;
 
 $debug_log      = '';
@@ -63,14 +64,25 @@ if ($pr) {
   if ($debug) { $debug_log .= "Reference > Commit: $commit\n";}
 } elseif ($release) {
   $reference = 'release';
+  if ($debug) { $debug_log .= "Reference > Release: $release";}
+
   // Validate release tag syntax
   if (!preg_match('/^[a-zA-Z0-9._-]+$/', $release)) {
     http_response_code(400);
     die('Invalid release tag.');
   }
-  
-  $repo_filename = "$repo_name-release_$release.zip";
-  if ($debug) { $debug_log .= "Reference > Release: $release\n";}
+  if ($asset) {
+    if ($debug) { $debug_log .= " [with asset: $asset]";}
+    // Validate asset name syntax
+    if (!preg_match('/^[a-zA-Z0-9._-]+$/', $asset)) {
+      http_response_code(400);
+      die('Invalid asset name.');
+    }
+    $repo_filename = "$asset";
+  } else {  
+    $repo_filename = "$repo_name-release_$release.zip";
+  }
+  if ($debug) { $debug_log .= "\n";}
 } else {
   $reference = 'branch';
   // Validate branch name syntax
@@ -152,7 +164,11 @@ switch ($action) {
         readfile($url);
         break;
       case 'release':
-        $url = "https://github.com/$repo/archive/refs/tags/$release.zip";
+        if ($asset) {
+          $url = "https://github.com/$repo/releases/download/$release/$asset";
+        } else {
+          $url = "https://github.com/$repo/archive/refs/tags/$release.zip";
+        }
         if ($debug) { $debug_log .= "GitHub direct URL: $url\n";}
         readfile($url);
         break;
@@ -174,7 +190,11 @@ switch ($action) {
         break;
       case 'branch':
         // Only get the specific branch with a depth of 1
-        $command = "git clone --depth 1 --filter=blob:none --sparse --no-checkout --branch " . escapeshellarg($branch) . " " . escapeshellarg ($github_repo_url);
+        $command = "git clone --depth 1 --single-branch --filter=blob:none --sparse --no-checkout --branch " . escapeshellarg($branch) . " " . escapeshellarg ($github_repo_url);
+        break;
+      case 'release':
+        // Only get the specific release with a depth of 1
+        $command = "git clone --depth 1 --single-branch --filter=blob:none --sparse --no-checkout --branch " . escapeshellarg($release) . " " . escapeshellarg ($github_repo_url);
         break;
     }
     
