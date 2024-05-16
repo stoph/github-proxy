@@ -21,28 +21,28 @@
       <div class="text-left mb-4">
         <div class="font-bold mb-2">Full Branch</div>
         <span class="mb-4 text-gray-500 text-sm">Download all code for a specific branch. If no branch is passed, we will determine the default branch and return that.</span>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy?repo={repo}[&branch={branch}]" readonly>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy/?repo={repo}[&branch={branch}]" readonly>
       </div>
       <div class="text-left mb-4">
         <div class="font-bold mb-2">Full PR</div>
         <span class="mb-4 text-gray-500 text-sm">Download all the code for a specific PR, referenced by the PR number</span>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy?repo={repo}&pr={pr}" readonly>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy/?repo={repo}&pr={pr}" readonly>
       </div>
       <div class="text-left mb-4">
         <div class="font-bold mb-2">Full Commit</div>
         <span class="mb-4 text-gray-500 text-sm">Download all the code for a specific commit, referenced by the commit SHA</span>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy?repo={repo}&commit={commit}" readonly>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy/?repo={repo}&commit={commit}" readonly>
       </div>
       <div class="text-left mb-4">
         <div class="font-bold mb-2">Full Release</div>
         <span class="mb-4 text-gray-500 text-sm">Download all the code for a release, referenced by the release tag</span>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy?repo={repo}&release={tag}" readonly>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy/?repo={repo}&release={tag}" readonly>
       </div>
 
       <div class="text-left mb-4">
         <div class="font-bold mb-2">Asset from a Release</div>
         <span class="mb-4 text-gray-500 text-sm">Download a specific asset from a release, referenced by the release tag and asset filename</span>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy?repo={repo}&release={tag}&asset={filename}" readonly>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy/?repo={repo}&release={tag}&asset={filename}" readonly>
       </div>
 
       <hr class="w-48 h-1 mx-auto bg-gray-100 border-0 rounded dark:bg-gray-200 mb-4">
@@ -50,19 +50,25 @@
       <div class="text-left mb-4">
         <div class="font-bold mb-2">Partial Branch</div>
         <span class="mb-4 text-gray-500 text-sm">Download only a certain subdirectory of the repo for a specific branch.</span>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy?repo={repo}&branch={branch}&directory={directory}" readonly>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy/?repo={repo}&branch={branch}&directory={directory}" readonly>
       </div>
       <div class="text-left mb-4">
         <div class="font-bold mb-2">Partial PR</div>
         <span class="mb-4 text-gray-500 text-sm">Download only a certain subdirectory of the repo for a specific PR.</span>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy?repo={repo}&pr={pr}&directory={directory}" readonly>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy/?repo={repo}&pr={pr}&directory={directory}" readonly>
       </div>
       <div class="text-left mb-4">
         <div class="font-bold mb-2">Partial Commit</div>
         <span class="mb-4 text-gray-500 text-sm">Download only a certain subdirectory of the repo for a specific commit.</span>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy?repo={repo}&commit={commit}&directory={directory}" readonly>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" value="https://github-proxy.com/proxy/?repo={repo}&commit={commit}&directory={directory}" readonly>
       </div>    
     </div>
+
+    <div class="text-right mb-4">
+      <!-- <div class="font-bold mb-2">Partial Commit</div> -->
+      <span class="mb-4 text-gray-500 text-sm"><sup>*</sup> Be sure to add the trailing slash after /proxy, <i>for now</i></span>
+    </div>
+
   </div>
 
   <footer class="fixed inset-x-0 bottom-0 py-4 bg-gray-800 text-center text-xs text-gray-300 grid grid-cols-3 gap-4">

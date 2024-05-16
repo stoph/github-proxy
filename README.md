@@ -7,7 +7,7 @@ This is a simple proxy for the Github's archive files. It's intended to be used 
 
 ## Full Branch:
 Timing:  *n/a* (*Passthrough from GitHub*)
-`https://github-proxy.com/proxy?repo=WordPress/gutenberg&branch=try/drop-image-on-empty-block`
+`https://github-proxy.com/proxy/?repo=WordPress/gutenberg&branch=try/drop-image-on-empty-block`
 
 **Code executed**
 
@@ -15,7 +15,7 @@ Timing:  *n/a* (*Passthrough from GitHub*)
 
 ## Full PR:
 Timing: *2.78s*
-`https://github-proxy.com/proxy?repo=WordPress/gutenberg&pr=60903`
+`https://github-proxy.com/proxy/?repo=WordPress/gutenberg&pr=60903`
 
 **Code executed**
 
@@ -28,7 +28,7 @@ git checkout FETCH_HEAD
 
 ## Full Commit:
 Timing: *n/a* (*Passthrough from GitHub*)
-`https://github-proxy.com/proxy?repo=WordPress/gutenberg&commit=adfa3c6`
+`https://github-proxy.com/proxy/?repo=WordPress/gutenberg&commit=adfa3c6`
 
 **Code executed**
 
@@ -42,7 +42,7 @@ git checkout adfa3c6
 
 ## Partial Branch:
 Timing: *0.18s*
-`https://github-proxy.com/proxy?repo=WordPress/gutenberg&directory=packages/block-editor/src/components/use-block-drop-zone&branch=try/drop-image-on-empty-block`
+`https://github-proxy.com/proxy/?repo=WordPress/gutenberg&directory=packages/block-editor/src/components/use-block-drop-zone&branch=try/drop-image-on-empty-block`
 
 **Code executed**
 
@@ -56,7 +56,7 @@ git read-tree -mu HEAD
 
 ## Partial PR:
 Timing: *1.91s*
-`https://github-proxy.com/proxy?repo=WordPress/gutenberg&directory=.github/workflows&pr=60903`
+`https://github-proxy.com/proxy/?repo=WordPress/gutenberg&directory=.github/workflows&pr=60903`
 
 **Code executed**
 
@@ -71,7 +71,7 @@ git checkout FETCH_HEAD
 
 ## Partial Commit:
 Timing: *4.09s*
-`https://github-proxy.com/proxy?repo=WordPress/gutenberg&directory=packages/components&commit=8ff4af6`
+`https://github-proxy.com/proxy/?repo=WordPress/gutenberg&directory=packages/components&commit=8ff4af6`
 
 **Code executed**
 
