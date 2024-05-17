@@ -1,5 +1,8 @@
 RewriteEngine On
 
+# Rewrite rule to redirect all requests to your PHP script
+RewriteRule ^https:/+github.com/(.*)$ index.php?url=$1 [L,QSA]
+
 RewriteRule ^checkout/ - [F,L]
 RewriteRule ^logs/(?!usage\.log$). - [F,L]
 
