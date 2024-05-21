@@ -1,4 +1,8 @@
 <?php
+require 'vendor/autoload.php';
+
+use PhpZip\ZipFile;
+
 if ( !isset($_GET['url']) ) {
   include 'homepage.html';
   die();
@@ -62,12 +66,10 @@ if (empty($error_array)) {
     ?>
 PLUGIN;
   
-  $zip = new ZipArchive();
-  $zip_file = 'checkouts/error_plugin.zip';
-  $ret = $zip->open($zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+  $zip = new ZipFile();
   $zip->addFromString('error_plugin.php', $plugin);
+  $zip_data = $zip->outputAsString();
+  header('Content-Length: ' . strlen($zip_data));
+  echo $zip_data;
   $zip->close();
-  //header('Content-Length: ' . filesize($zip_file));
-  readfile($zip_file);
-  unlink($zip_file);
 }
