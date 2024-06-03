@@ -165,7 +165,7 @@ switch ($action) {
         break;
       case 'release':
         if ($asset) {
-          $url = "https://github.com/$repo/releases/download/$release/$asset";
+          $url = ( 'latest' === $release ) ? "https://github.com/$repo/releases/$release/download/$asset" : "https://github.com/$repo/releases/download/$release/$asset";
         } else {
           $url = "https://github.com/$repo/archive/refs/tags/$release.zip";
         }
