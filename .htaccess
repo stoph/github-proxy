@@ -1,11 +1,13 @@
 RewriteEngine On
 
-# Rewrite rule to redirect all requests to your PHP script
+# Redirect all github.com prefixed requests
 RewriteRule ^https:/+github.com/(.*)$ index.php?url=$1 [L,QSA]
 
 RewriteRule ^checkout/ - [F,L]
 RewriteRule ^logs/(?!usage\.log$). - [F,L]
 
+# Old format without query params. Kept in case its in use.
+# TODO: Remove this section and the associated /proxy.php file
 RewriteRule ^archive/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\/-]+)/?$ proxy.php?action=archive&repo=$1/$2&branch=$3 [QSA,L]
 
 RewriteRule ^archive/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ proxy.php?action=archive&repo=$1/$2 [QSA,L]

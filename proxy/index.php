@@ -8,7 +8,7 @@ $pr         = $_GET['pr'] ?? null; // numeric
 $commit     = $_GET['commit'] ?? null; // alphanumeric
 $release    = $_GET['release'] ?? null; // alphanumeric
 $directory  = $_GET['directory'] ?? null;
-$asset       = $_GET['asset'] ?? null;
+$asset      = $_GET['asset'] ?? null;
 $debug      = $_GET['debug'] ?? false;
 
 $debug_log      = '';
@@ -165,7 +165,11 @@ switch ($action) {
         break;
       case 'release':
         if ($asset) {
-          $url = ( 'latest' === $release ) ? "https://github.com/$repo/releases/$release/download/$asset" : "https://github.com/$repo/releases/download/$release/$asset";
+          if ( 'latest' === $release ) {
+            $url = "https://github.com/$repo/releases/latest/download/$asset";
+          } else {
+            $url = "https://github.com/$repo/releases/download/$release/$asset";
+          }
         } else {
           $url = "https://github.com/$repo/archive/refs/tags/$release.zip";
         }
